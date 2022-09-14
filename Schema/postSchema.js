@@ -1,10 +1,14 @@
-const mongoose = require("mongoose");
+import { Schema, model, models } from "mongoose";
 
-const postSchema = new mongoose.Schema({
-    title: String,
-    description: String,
-    href: String,
-    // image:
+const newSchema = new Schema({
+  title: String,
+  slug: String,
+  desc: String,
+  content: String,
+  img: String,
+  cate_id: String,
 });
 
-module.exports = mongoose.model("postSchema", csvSchema);
+const News = models.news || model("news", newSchema);
+
+export default News;

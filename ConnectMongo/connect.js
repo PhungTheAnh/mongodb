@@ -1,8 +1,5 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
-const mongoose = require("mongoose");
-const connectMongo = async () =>
-  mongoose.connect("mongodb://localhost:27017/Posts");
+const connectMongo = async () => mongoose.connect("mongodb://localhost:27017/crawl");
 
 export default connectMongo;
- 

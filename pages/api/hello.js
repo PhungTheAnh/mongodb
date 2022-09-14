@@ -1,14 +1,17 @@
 import request from "request-promise";
+import News from "../../Schema/postSchema";
+import connectMongo from "../../ConnectMongo/connect";
 import mongoose from "mongoose";
 var cloudinary = require("cloudinary").v2;
 require("dotenv").config();
-
 const cheerio = require("cheerio");
-const mongoose = require("mongoose");
-const connectMongo = async () =>
-  mongoose.connect("mongodb://localhost:27017/Posts");
-export default function handler(req, res) {
 
+export default function handler(req, res) {
+  const post = new mongoose.Schema({ title: 'string', description: 'string' });
+  const post_detail = mongoose.model('post_detail', post);
+  post.insertMany([{ title: "hello" }], function (err) {
+    
+  });
   const API1 = {
     url: "https://khoahoc.tv/",
   };
@@ -17,6 +20,10 @@ export default function handler(req, res) {
     if (!response) {
       res.status(404).json({ error: "ERROR!" });
     } else {
+      async function connect() {
+        await connectMongo();
+        return 1;
+      }
       const $ = cheerio.load(html);
       const titles = $(html).find("a.title");
       const descriptions = $(html).find("div.desc");
@@ -55,7 +62,7 @@ export default function handler(req, res) {
             const detailImg = $(html).find(".content-detail p img");
             detailContent.each((index, e) => {
               const contentDetail = $(e).text();
-              
+
             });
             // call img
             detailImg.each(async (index, e) => {
