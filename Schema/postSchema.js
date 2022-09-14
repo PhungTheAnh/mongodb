@@ -2,10 +2,11 @@ import { Schema, model, models } from "mongoose";
 
 const newSchema = new Schema({
   title: String,
+  title_en: String,
+  img: String,
   slug: String,
   desc: String,
   content: String,
-  img: String,
   cate_id: String,
 });
 
