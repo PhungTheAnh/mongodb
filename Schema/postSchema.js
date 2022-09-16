@@ -6,6 +6,7 @@ const newSchema = new Schema({
   img: String,
   slug: String,
   desc: String,
+  keyword: String,
   content: String,
   cate_id: String,
 });

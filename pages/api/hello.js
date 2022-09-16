@@ -37,25 +37,11 @@ export default function handler(req, res) {
       titles.each(async (index, e) => {
         const title_post = $(e).text();
         arr_title.push(title_post);
-        
-        // console.log(title_post);
+
         const urlPost = e["attribs"]["href"];
         arr_slug.push(urlPost);
-        console.log(title_post);
-        // translate title
-        // const abc = title_post;
-        // translate(abc, { to: "en" })
-        //   .then((res) => {
-        //     // console.log(res);
-        //     arr_title_en.push(res);
-        //     console.log(arr_title_en);
-        //   })
-        //   .catch((err) => {
-        //     console.error(err);
-        //   });
       });
-      // 
-      
+      //
 
       // call src img
       let arr_img = [];
@@ -74,7 +60,7 @@ export default function handler(req, res) {
         const description = $(e).text();
         arr_desc.push(description);
       });
-      
+
       // function call Detail_Content
       for (const key in arr_slug) {
         const API2 = {
@@ -84,11 +70,11 @@ export default function handler(req, res) {
           if (!response) {
             res.status(404).json({ error: "Error" });
           } else {
-            const $1 = cheerio.load(html);
+            const $ = cheerio.load(html);
             // call content
             let arr_imgContent = [];
-            const listDetailContent = $1(html).find(".content-detail");
-            const detailImg = $1(html).find(".content-detail p img");
+            const listDetailContent = $(html).find(".content-detail");
+            const detailImg = $(html).find(".content-detail p img");
             listDetailContent.find(".content-detail ul").each(function (i, e) {
               $(this).replaceWith("");
             });
@@ -99,6 +85,16 @@ export default function handler(req, res) {
                 $(this).replaceWith("");
               });
 
+            // call keyword
+            let keyword = "";
+            $(html)
+              .find('meta')
+              .each(function (i, e) {
+                if ($(this).attr("name") == "keywords") {
+                  keyword = $(this).attr("content");
+                }
+              });
+          
             // call img
             listDetailContent.find("img").each(async (index, e) => {
               const imgContent = e["attribs"]["data-src"];
@@ -111,14 +107,15 @@ export default function handler(req, res) {
               $(e).attr("data-src", url);
               arr_imgContent.push(imgContent);
             });
+
+            // translate title
+            console.log(arr_title);
             const abc = arr_title[key];
             translate(abc, { to: "en" })
               .then((res) => {
-                // arr_title_en.push(res);
                 return res;
-                // console.log(arr_title_en);
               })
-              .then(text => {
+              .then((text) => {
                 setTimeout(() => {
                   const news = new News({
                     title: arr_title[key],
@@ -126,6 +123,7 @@ export default function handler(req, res) {
                     img: arr_img[key],
                     slug: arr_slug[key],
                     desc: arr_desc[key],
+                    keyword: text,
                     content: listDetailContent.html(),
                     cate_id: "123",
                   }).save();
@@ -134,13 +132,12 @@ export default function handler(req, res) {
               .catch((err) => {
                 console.error(err);
               });
-            
           }
         }
         request.get(API2, getDetailPost);
       }
 
-      if (p <= 1) {
+      if (p <= 2) {
         p++;
         request.get(API1, getInforPost);
       }
