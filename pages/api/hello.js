@@ -34,7 +34,7 @@ export default function handler(req, res) {
       let lp = [];
       // call title and href
       let news;
-      titles.each(async (index, e) => {
+      titles.each((index, e) => {
         const title_post = $(e).text();
         arr_title.push(title_post);
 
@@ -48,6 +48,7 @@ export default function handler(req, res) {
 
       list_src.each(async (index, e) => {
         const src = e["attribs"]["data-src"];
+        // push img to Cloud
         // const { url } = await cloudinary.uploader.upload(src, {
         //   folder: "News",
         //   resource_type: "image",
@@ -75,10 +76,11 @@ export default function handler(req, res) {
             let arr_imgContent = [];
             const listDetailContent = $(html).find(".content-detail");
             const detailImg = $(html).find(".content-detail p img");
+            //delete ul
             listDetailContent.find(".content-detail ul").each(function (i, e) {
               $(this).replaceWith("");
             });
-
+            //delete .adbox
             listDetailContent
               .find(".content-detail .adbox")
               .each(function (i, e) {
@@ -87,32 +89,36 @@ export default function handler(req, res) {
 
             // call keyword
             let keyword = "";
-            $(html)
-              .find('meta')
+            $("*")
+              // .find("body")
+              .find("meta")
               .each(function (i, e) {
                 if ($(this).attr("name") == "keywords") {
+                  // console.log("hello");
                   keyword = $(this).attr("content");
                 }
               });
-          
+            console.log(keyword);
             // call img
-            listDetailContent.find("img").each(async (index, e) => {
-              const imgContent = e["attribs"]["data-src"];
-              const { url } = await cloudinary.uploader.upload(imgContent, {
-                folder: "News_Detail",
-                resource_type: "image",
-              });
-              // console.log(url);
-              $(e).attr("src", url);
-              $(e).attr("data-src", url);
-              arr_imgContent.push(imgContent);
-            });
+            // listDetailContent.find("img").each(async (index, e) => {
+            //   const imgContent = e["attribs"]["data-src"];
+            //   //push img to Cloud
+            //   const { url } = await cloudinary.uploader.upload(imgContent, {
+            //     folder: "News_Detail",
+            //     resource_type: "image",
+            //   });
+            //   // console.log(url);
+            //   $(e).attr("src", url);
+            //   $(e).attr("data-src", url);
+            //   arr_imgContent.push(imgContent);
+            // });
 
             // translate title
-            console.log(arr_title);
+            // console.log(arr_title);
             const abc = arr_title[key];
             translate(abc, { to: "en" })
               .then((res) => {
+                // console.log(res);
                 return res;
               })
               .then((text) => {
@@ -123,7 +129,7 @@ export default function handler(req, res) {
                     img: arr_img[key],
                     slug: arr_slug[key],
                     desc: arr_desc[key],
-                    keyword: text,
+                    keyword: keyword,
                     content: listDetailContent.html(),
                     cate_id: "123",
                   }).save();
@@ -137,7 +143,7 @@ export default function handler(req, res) {
         request.get(API2, getDetailPost);
       }
 
-      if (p <= 2) {
+      if (p > 1) {
         p++;
         request.get(API1, getInforPost);
       }
